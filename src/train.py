@@ -9,22 +9,20 @@ import os
 # Load data
 df = pd.read_csv("data/housing.csv")
 
-# Split
+# Split features and target
 X = df.drop("median_house_value", axis=1)
 y = df["median_house_value"]
 
-# ✅ Handle missing values FIRST
-# fill numeric NaN with median
+# Handle missing values
 X = X.fillna(X.median(numeric_only=True))
 
-# fill categorical NaN with mode
 for col in X.select_dtypes(include=["object"]).columns:
     X[col] = X[col].fillna(X[col].mode()[0])
 
-# ✅ Encode categorical variables
+# Encode categorical variables
 X = pd.get_dummies(X, drop_first=True)
 
-# Split dataset
+# Train-test split
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
@@ -55,4 +53,9 @@ with open("metrics/metrics.json", "w") as f:
 os.makedirs("model", exist_ok=True)
 joblib.dump(model, "model/model.pkl")
 
-print(metrics)
+# ✅ CLEAN PRINT OUTPUT (IMPORTANT)
+print("\n=== MODEL METRICS ===")
+print(f"RMSE: {rmse}")
+print(f"R2 Score: {r2}")
+print(f"Dataset Size: {len(df)}")
+print("=====================\n")
