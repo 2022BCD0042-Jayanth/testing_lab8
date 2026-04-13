@@ -9,13 +9,19 @@ import os
 # Load data
 df = pd.read_csv("data/housing.csv")
 
-# Split
+# Split features and target
 X = df.drop("median_house_value", axis=1)
 y = df["median_house_value"]
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+# ✅ Convert categorical column(s) to numeric using one-hot encoding
+X = pd.get_dummies(X, drop_first=True)
 
-# Train
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Train model
 model = LinearRegression()
 model.fit(X_train, y_train)
 
