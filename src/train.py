@@ -9,14 +9,22 @@ import os
 # Load data
 df = pd.read_csv("data/housing.csv")
 
-# Split features and target
+# Split
 X = df.drop("median_house_value", axis=1)
 y = df["median_house_value"]
 
-# ✅ Convert categorical column(s) to numeric using one-hot encoding
+# ✅ Handle missing values FIRST
+# fill numeric NaN with median
+X = X.fillna(X.median(numeric_only=True))
+
+# fill categorical NaN with mode
+for col in X.select_dtypes(include=["object"]).columns:
+    X[col] = X[col].fillna(X[col].mode()[0])
+
+# ✅ Encode categorical variables
 X = pd.get_dummies(X, drop_first=True)
 
-# Train-test split
+# Split dataset
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
